@@ -2,6 +2,7 @@
 .idea
 *.log
 *.[oax]
+*.out
 tmp/
 
 
