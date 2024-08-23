@@ -1,5 +1,3 @@
-#include "main.h"
-#include "canvas.h"
 #include <stdbool.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -7,32 +5,60 @@
 #include <assert.h>
 #include <curses.h>
 #include <time.h>
+#include "main.h"
+#include "canvas.h"
+#include "worm.h"
 #define SIDE_LENGTH 20
+/* add moving the snake */
 
 int main(void){
-  WINDOW *content = NULL, *background = NULL;
-  int starty, startx;
-  struct point fruit_position, prev_fruit_pos = {.y = 0, .x = 0};
-
-
   initscr();
 
+  WINDOW *content = NULL, *background = NULL;
+  int starty, startx;
   assert(create_windows(SIDE_LENGTH, &content, &background, &starty, &startx));
   refresh();
 
+  struct point fruit_position = {.y = 0, .x = 0};
+  clock_t fruit_spawn;
+  bool spawned = false;
+  static const clock_t fruit_lifetime = 5 * CLOCKS_PER_SEC;
+
+  struct snake* snak = create_snake(SIDE_LENGTH);
+  int direction = LEFT;
+  assert(snak);
+
+
   while(true){
-    mvwdelch(content, prev_fruit_pos.y, prev_fruit_pos.x);
-    prev_fruit_pos = spawn_fruit(content, &fruit_position, SIDE_LENGTH);
+    if(fruit_passed(spawned, fruit_spawn, fruit_lifetime)){
+      mvwdelch(content, fruit_position.y, fruit_position.x);
+      spawn_fruit(content, &fruit_position, SIDE_LENGTH);
+      fruit_spawn = clock();
+      spawned = true;
+    }
+
+
+    print_snake(content, snak);
+    if(!move_snake(snak, SIDE_LENGTH, NULL, direction)){
+      wrefresh(content);
+      break;
+    }
     wrefresh(content);
   }
+  clear();
 
   endwin();
   return 0;
 }
 
+bool fruit_passed(bool spawned, clock_t fruit_spawn, clock_t fruit_lifetime){
+return ( spawned == false ||
+        (double)(clock()-fruit_spawn)/CLOCKS_PER_SEC > (double) fruit_lifetime/CLOCKS_PER_SEC );
+}
+
 bool create_windows(int side_length, WINDOW** content, WINDOW** background, int *starty, int *startx){
-	*starty = (LINES - side_length) / 2;	/* Calculating for a center placement */
-	*startx = (COLS  - side_length) / 2;	/* of the window		*/
+  *starty = (LINES - side_length) / 2;
+  *startx = (COLS  - side_length) / 2;
   curs_set(0);
 
   refresh();

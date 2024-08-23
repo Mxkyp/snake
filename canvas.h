@@ -3,6 +3,8 @@
 #include <stdbool.h>
 #include <curses.h>
 
+enum directions{UP = 0, RIGHT, DOWN, LEFT};
+
 struct point{
   int x,y;
 };
