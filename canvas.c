@@ -12,7 +12,7 @@ void print_fruit(WINDOW * win, struct point *p){
   if(win == NULL){
    win = stdscr;
   }
-  mvwaddch(win, p->y, p->x, '*');
+  mvwaddch(win, p->y, p->x, '*' | A_BOLD);
 }
 /*
  * spawns fruit randomly within the canvas

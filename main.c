@@ -6,23 +6,26 @@
 #include <stdio.h>
 #include <assert.h>
 #include <curses.h>
+#include <time.h>
 #define SIDE_LENGTH 20
 
 int main(void){
   WINDOW *content = NULL, *background = NULL;
   int starty, startx;
-  struct point fruit_position;
+  struct point fruit_position, prev_fruit_pos = {.y = 0, .x = 0};
 
 
   initscr();
 
   assert(create_windows(SIDE_LENGTH, &content, &background, &starty, &startx));
   refresh();
+
   while(true){
-    //wclear(content);
-    spawn_fruit(content, &fruit_position, SIDE_LENGTH);
+    mvwdelch(content, prev_fruit_pos.y, prev_fruit_pos.x);
+    prev_fruit_pos = spawn_fruit(content, &fruit_position, SIDE_LENGTH);
     wrefresh(content);
   }
+
   endwin();
   return 0;
 }
