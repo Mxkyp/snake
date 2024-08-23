@@ -8,19 +8,19 @@
  * returns false if any window failed to create
  * returns true if both were created correctly
 */
-bool create_windows(struct square_map *canvas, WINDOW** content, WINDOW** background, int *starty, int *startx);
+bool create_windows(int side_length, WINDOW** content, WINDOW** background, int *starty, int *startx);
 
 /*
  * creates background window for the playing canvas,
  * returns a pointer to it
 */
-WINDOW *create_background(struct square_map *canvas, int *start_y, int *start_x);
+WINDOW *create_background(int side_length, int *start_y, int *start_x);
 
 /*
  * creates a window representing the canvas, inside the background window
  * returns a pointer to it
 */
-WINDOW *wcreate_canvas(struct square_map *canvas, int *start_y, int *start_x);
+WINDOW *wcreate_canvas(int side_length, int *start_y, int *start_x);
 
 
 #endif // MAIN_H_
