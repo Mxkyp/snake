@@ -17,18 +17,11 @@ struct square_map* create_canvas(int side_length){
   if(map == NULL){ return NULL; }
   map->side_length = side_length;
 
-  fill_top_bottom(map, side_length, TOP);
-
-  /*print the side_length-2 inside lines of the square*/
-  for(int j = 1; j < side_length-1; j++){
+  for(int j = 1; j < side_length; j++){
     for(int i = 0; i <side_length; i++){
-        if(i == 0 ){ map->key[j][i] = '@';  } // left border
-        else if(i == side_length-1){ map->key[j][i] = '@'; } // right border
-        else { map->key[j][i] = ' '; }
+      map->key[i][j] = 'o';
     }
   }
-
-  fill_top_bottom(map, side_length, BOT);
   return map;
 }
 
@@ -48,37 +41,30 @@ struct square_map* create_map(int side_length){
   return map;
 }
 
-void print_canvas(struct square_map* map){
+void print_canvas(WINDOW * win, struct square_map* map){
+  if(win == NULL){
+   win = stdscr;
+  }
     for(int j = 0; j < map->side_length; j++){
       for(int i = 0; i < map->side_length; i++){
-        printf("%c", map->key[i][j]);
-    }
-      printf("\n");
-  }
-}
-
-void fill_top_bottom(struct square_map* map, int side_length,int type){
-  if(type == TOP){
-    for(int i = 0; i < side_length; i++){
-    map->key[0][i] = '@';
-    }
-  }
-  else if(type == BOT){
-    for(int i = 0; i < side_length; i++){
-    map->key[side_length-1][i] = '@';
+        wprintw(win, "%c", map->key[i][j]);
     }
   }
 }
-
 /*
  * spawns fruit randomly within the canvas
  * if the fruit is spawned waits,
 */
-bool spawn_fruit(struct square_map* map, int side_length, bool is_spawned){
+char *spawn_fruit(struct square_map* map, char*last_fruit, int side_length, bool is_spawned){
+  static const char empty_cell = ' ';
+  if(last_fruit != NULL){
+    *last_fruit = empty_cell;
+  }
   srand(time(NULL));
-  const int border_thickness = 1;
-  const int inside_width_height = side_length - 2*border_thickness;
-  int fruit_y = 1 + rand() % (inside_width_height-1),
-      fruit_x = 1 + rand() % (inside_width_height-1);
+  int fruit_y =  rand() % side_length,
+      fruit_x =  rand() % side_length;
+
   map->key[fruit_y][fruit_x] = '*';
+
+  return &map->key[fruit_y][fruit_x];
 }

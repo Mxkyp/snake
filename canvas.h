@@ -1,6 +1,7 @@
 #ifndef CANVAS_H_
 #define CANVAS_H_
 #include <stdbool.h>
+#include <curses.h>
 
 struct square_map{
   int side_length;
@@ -17,7 +18,7 @@ struct square_map* create_canvas(int side_length);
  * spawns fruit randomly within the canvas
  * if the fruit is spawned waits;
 */
-bool spawn_fruit(struct square_map* canvas, int side_length, bool is_spawned);
+char *spawn_fruit(struct square_map* map, char*last_fruit, int side_length, bool is_spawned);
 
 /*
  * creates a map with side_length*side_length keys;
@@ -33,11 +34,7 @@ struct square_map* create_map(int side_length);
 */
 void fill_top_bottom(struct square_map* map, int side_length,int type);
 
-void print_canvas(struct square_map* map);
+void print_canvas(WINDOW * win, struct square_map* map);
 
-/*
- * goes to the x, y line
-*/
-void gotoxy(unsigned x, unsigned y);
 
 #endif // CANVAS_H_
