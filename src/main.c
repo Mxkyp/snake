@@ -27,6 +27,9 @@ int main(void){
   struct snake* snak = create_snake(SIDE_LENGTH);
   int direction = LEFT;
   assert(snak);
+  int c, ch;
+  cbreak();
+  noecho();
 
 
   while(true){
@@ -37,19 +40,35 @@ int main(void){
       spawned = true;
     }
 
+    timeout(1000);
+    c = getch();
+
+
+    switch(c){
+      case 'w': direction = UP;
+        break;
+      case 'd': direction = RIGHT;
+        break;
+      case 's': direction = DOWN;
+        break;
+      case 'a': direction = LEFT;
+        break;
+    }
+
 
     print_snake(content, snak);
-    if(!move_snake(snak, SIDE_LENGTH, NULL, direction)){
+    if(!move_snake(content, snak, SIDE_LENGTH, NULL, direction)){
       wrefresh(content);
       break;
     }
     wrefresh(content);
   }
-  clear();
 
+  clear();
   endwin();
   return 0;
 }
+
 
 bool fruit_passed(bool spawned, clock_t fruit_spawn, clock_t fruit_lifetime){
 return ( spawned == false ||

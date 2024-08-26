@@ -4,7 +4,6 @@
 #include <unistd.h>
 
 bool print_snake(WINDOW *win, struct snake *s){
-
   for(struct point *p = s->head; ; p++){
    mvwaddch(win, p->y, p->x, 'o' | A_BOLD);
    if(p == s->tail){ break; }
@@ -25,23 +24,26 @@ struct snake* create_snake(int side_length){
   return snake;
 }
 
-bool move_snake(struct snake *s, const int side_length, struct point *fruit_position, const int direction){
+bool move_snake(WINDOW *win, struct snake *s, const int side_length, struct point *fruit_position, const int direction){
   if(check_move(s, side_length, direction)){
-    update_snake(s, direction);
+    update_snake(win, s, direction);
     return true;
   }
   return false;
 }
 
-void update_snake(struct snake *s,const int direction){
-
+void update_snake(WINDOW* win, struct snake *s, const int direction){
+  struct point *to_free = s->tail;
   for(struct point *prev = s->tail, *next = prev; next != s->head; prev--, next-=2){
     refresh();
-    sleep(2);
     *prev = *next;
   }
-    refresh();
-    sleep(2);
+
+  if(s->tail != s->head){
+  mvwdelch(win, to_free->y,to_free->x);
+  }
+  timeout(150);
+  refresh();
 
   switch(direction){
     case UP:   s->head->y--;

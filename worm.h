@@ -21,13 +21,13 @@ struct snake* create_snake(int side_length);
  * if yes return true, and move the snake by calling update_snake()
  * else return false
 */
-bool move_snake(struct snake *s, const int side_length, struct point *fruit_position, const int direction);
+bool move_snake(WINDOW *win, struct snake *s, const int side_length, struct point *fruit_position, const int direction);
 
 
 bool check_move(struct snake *s,const int side_length, const int move_direction);
 
 
-void update_snake(struct snake *s,const int direction);
+void update_snake(WINDOW* win, struct snake *s, const int direction);
 
 /*
  * print the snake;
