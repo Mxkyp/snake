@@ -1,5 +1,5 @@
-#include "worm.h"
-#include "canvas.h"
+#include "../worm.h"
+#include "../canvas.h"
 #include <stdlib.h>
 #include <unistd.h>
 

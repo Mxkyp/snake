@@ -7,14 +7,14 @@ FILE2=canvas
 all: $(PROG)
 
 LIBS= -lncurses -Wall -Wextra
+SRC=./src/
 
-
-main.o: main.c canvas.h
-	$(CC) $(CFLAGS) -c main.c
-canvas.o: canvas.c canvas.h
-	$(CC) $(CFLAGS) -c canvas.c
-worm.o: worm.c canvas.h
-	$(CC) $(CFLAGS) -c worm.c
+main.o: $(SRC)main.c canvas.h
+	$(CC) $(CFLAGS) -c $(SRC)main.c
+canvas.o: $(SRC)canvas.c canvas.h
+	$(CC) $(CFLAGS) -c $(SRC)canvas.c
+worm.o: $(SRC)worm.c canvas.h
+	$(CC) $(CFLAGS) -c $(SRC)worm.c
 #=====================================================
 snake: main.o canvas.o worm.o
 	$(CC) $(CFLAGS) -o snake main.o canvas.o worm.o $(LIBS) && ./snake

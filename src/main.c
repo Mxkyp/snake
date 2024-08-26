@@ -5,9 +5,9 @@
 #include <assert.h>
 #include <curses.h>
 #include <time.h>
-#include "main.h"
-#include "canvas.h"
-#include "worm.h"
+#include "../main.h"
+#include "../canvas.h"
+#include "../worm.h"
 #define SIDE_LENGTH 20
 /* add moving the snake */
 
