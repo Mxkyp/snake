@@ -3,73 +3,45 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-bool print_snake(WINDOW *win, struct snake *s){
-  for(struct point *p = s->head; ; p++){
-   mvwaddch(win, p->y, p->x, 'o' | A_BOLD);
-   if(p == s->tail){ break; }
+struct snake *create_snake(const int canvas_side_length){
+  struct snake *s = malloc(sizeof(*s));
+  s->coords.y = canvas_side_length/2;
+  s->coords.x = canvas_side_length/2;
+  s->next = NULL;
+  s->before = NULL;
+  return s;
+}
+
+void print_snake(WINDOW * win, struct snake *s, struct point old_tail_coords){
+  mvwdelch(win, old_tail_coords.y, old_tail_coords.x);
+  for(struct snake *p = s; p != NULL; p = s->next){
+    mvwaddch(win, p->coords.y, p->coords.x,'o' | A_BOLD);
   }
 }
 
-struct snake* create_snake(int side_length){
-  struct snake* snake = malloc(sizeof(int*) * 2
-                               + (side_length * side_length) * sizeof(int));
-  if(snake == NULL){
-    return NULL;
-  }
+void update_snake(WINDOW *win, struct snake **s, const int direction){
+  struct snake *last;
 
-  snake->head = &snake->body[0];
-  snake->head->y = side_length/2;
-  snake->head->x = side_length/2;
-  snake->tail = snake->head;
-  return snake;
-}
+  for(last = *s; last->next != NULL;last = (*s)->next);
 
-bool move_snake(WINDOW *win, struct snake *s, const int side_length, struct point *fruit_position, const int direction){
-  if(check_move(s, side_length, direction)){
-    update_snake(win, s, direction);
-    return true;
-  }
-  return false;
-}
+  struct snake old_tail;
+  old_tail.coords = last->coords;
 
-void update_snake(WINDOW* win, struct snake *s, const int direction){
-  struct point *to_free = s->tail;
-  for(struct point *prev = s->tail, *next = prev; next != s->head; prev--, next-=2){
-    refresh();
-    *prev = *next;
+  for( ; last->before != NULL; last = last->before){
+    *last = *last->before;
   }
-
-  if(s->tail != s->head){
-  mvwdelch(win, to_free->y,to_free->x);
-  }
-  timeout(150);
-  refresh();
 
   switch(direction){
-    case UP:   s->head->y--;
+    case UP: (*s)->coords.y--;
       break;
-    case RIGHT:s->head->x++;
+    case RIGHT: (*s)->coords.x++;
       break;
-    case DOWN: s->head->y++;
+    case DOWN: (*s)->coords.y++;
       break;
-    case LEFT: s->head->x--;
+    case LEFT: (*s)->coords.x--;
       break;
-  };
-}
+  }
 
-/*
- * left-top point of the canvas= (0, 0)
- * right-bottom point of the canvas= (side_length, side_length)
-*/
-bool check_move(struct snake *s,const int side_length, const int move_direction){
-  switch(move_direction){
-    case UP: return    (s->head->y - 1 >= 0);
-      break;
-    case RIGHT: return (s->head->x + 1 <= side_length);
-      break;
-    case DOWN: return  (s->head->y + 1 <= side_length);
-      break;
-    case LEFT: return  (s->head->x - 1 >= 0);
-      break;
-  };
+  print_snake(win, *s, old_tail.coords);
+
 }

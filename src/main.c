@@ -27,7 +27,8 @@ int main(void){
   struct snake* snak = create_snake(SIDE_LENGTH);
   int direction = LEFT;
   assert(snak);
-  int c, ch;
+  int c;
+
   cbreak();
   noecho();
 
@@ -42,7 +43,7 @@ int main(void){
 
     timeout(1000);
     c = getch();
-
+    flushinp();
 
     switch(c){
       case 'w': direction = UP;
@@ -55,13 +56,9 @@ int main(void){
         break;
     }
 
-
-    print_snake(content, snak);
-    if(!move_snake(content, snak, SIDE_LENGTH, NULL, direction)){
-      wrefresh(content);
-      break;
-    }
+    update_snake(content, &snak, direction);
     wrefresh(content);
+    sleep(1);
   }
 
   clear();
