@@ -24,9 +24,11 @@ int main(void){
   bool spawned = false;
   static const clock_t fruit_lifetime = 5 * CLOCKS_PER_SEC;
 
-  struct snake* snak = create_snake(SIDE_LENGTH);
-  int direction = LEFT;
-  assert(snak);
+  struct snake* snake_head = create_snake(SIDE_LENGTH);
+  new_node(snake_head);
+  new_node(snake_head);
+  int direction = UP;
+  assert(snake_head);
   int c;
 
   cbreak();
@@ -41,7 +43,11 @@ int main(void){
       spawned = true;
     }
 
-    timeout(1000);
+
+    print_snake(content, snake_head);
+
+
+    timeout(2000);
     c = getch();
     flushinp();
 
@@ -56,9 +62,13 @@ int main(void){
         break;
     }
 
-    update_snake(content, &snak, direction);
+
+
+    //check_if_fruit(&snak, &fruit_position);
+    //update_snake(content, &snak, direction);
+    move_snake(direction, snake_head);
     wrefresh(content);
-    sleep(1);
+    wclear(content);
   }
 
   clear();

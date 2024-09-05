@@ -2,46 +2,67 @@
 #include "../canvas.h"
 #include <stdlib.h>
 #include <unistd.h>
+#include <assert.h>
+#include <stdbool.h>
 
 struct snake *create_snake(const int canvas_side_length){
   struct snake *s = malloc(sizeof(*s));
   s->coords.y = canvas_side_length/2;
   s->coords.x = canvas_side_length/2;
-  s->next = NULL;
   s->before = NULL;
   return s;
 }
 
-void print_snake(WINDOW * win, struct snake *s, struct point old_tail_coords){
-  mvwdelch(win, old_tail_coords.y, old_tail_coords.x);
-  for(struct snake *p = s; p != NULL; p = s->next){
-    mvwaddch(win, p->coords.y, p->coords.x,'o' | A_BOLD);
+struct snake *new_node(struct snake *head){
+  struct snake *new = malloc(sizeof(*new)), *passer;
+  assert(new);
+  while(head->next != NULL){
+    head = head->next;
+  }
+
+  head->next = new;
+
+  new->coords.x = head->coords.x + 1;
+  new->coords.y = head->coords.y;
+  new->before = head;
+  new->next = NULL;
+
+  return new;
+}
+
+void print_snake(WINDOW *win, struct snake *head){
+  while(head != NULL){
+    mvwaddch(win, head->coords.y, head->coords.x, 'o' | A_BOLD);
+    head = head->next;
   }
 }
 
-void update_snake(WINDOW *win, struct snake **s, const int direction){
-  struct snake *last;
+bool move_snake(int direction, struct snake *head){
+  struct snake *mover = head->next;
 
-  for(last = *s; last->next != NULL;last = (*s)->next);
-
-  struct snake old_tail;
-  old_tail.coords = last->coords;
-
-  for( ; last->before != NULL; last = last->before){
-    *last = *last->before;
+  while(mover->next != NULL){ // select the last 2 elements (mover is the last)
+    mover = mover->next;
+    head = head->next;
   }
 
-  switch(direction){
-    case UP: (*s)->coords.y--;
-      break;
-    case RIGHT: (*s)->coords.x++;
-      break;
-    case DOWN: (*s)->coords.y++;
-      break;
-    case LEFT: (*s)->coords.x--;
-      break;
+  while(true){ // keep replacing each element coordinates with the preceeding elements coordinates
+    mover->coords.y = head->coords.y;
+    mover->coords.x = head->coords.x;
+
+    if(head->before == NULL){ break; }
+    mover = mover->before;
+    head = head->before;
   }
 
-  print_snake(win, *s, old_tail.coords);
+  switch(direction){ // update the head
+    case UP: head->coords.y--;
+      break;
+    case RIGHT: head->coords.x++;
+      break;
+    case DOWN: head->coords.y++;
+      break;
+    case LEFT: head->coords.x--;
+      break;
+  };
 
 }
