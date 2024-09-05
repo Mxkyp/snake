@@ -30,6 +30,6 @@ struct snake *new_node(struct snake *head);
 void print_snake(WINDOW *win, struct snake *head);
 
 
-bool move_snake(int direction, struct snake *head);
+bool move_snake(int direction, struct snake *head, struct fruit *fr);
 
 #endif

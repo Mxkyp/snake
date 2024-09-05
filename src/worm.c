@@ -14,7 +14,7 @@ struct snake *create_snake(const int canvas_side_length){
 }
 
 struct snake *new_node(struct snake *head){
-  struct snake *new = malloc(sizeof(*new)), *passer;
+  struct snake *new = malloc(sizeof(*new));
   assert(new);
   while(head->next != NULL){
     head = head->next;
@@ -37,7 +37,7 @@ void print_snake(WINDOW *win, struct snake *head){
   }
 }
 
-bool move_snake(int direction, struct snake *head){
+bool move_snake(int direction, struct snake *head, struct fruit *fr){
   struct snake *mover = head->next;
 
   while(mover->next != NULL){ // select the last 2 elements (mover is the last)
@@ -65,4 +65,7 @@ bool move_snake(int direction, struct snake *head){
       break;
   };
 
+  if(head->coords.y == fr->coords.y && head->coords.x == fr->coords.x){ // if head lands on a fruit enlargen the snake by 1
+    new_node(head);
+  }
 }

@@ -29,4 +29,10 @@ WINDOW *wcreate_canvas(int side_length, int *start_y, int *start_x);
   delets old fruit, creates new, prints it and restarts the fruit timer
  */
 void manage_fruit(WINDOW *content, struct fruit *fr);
+
+/*
+ gives a 300ms window for inputing a char
+ */
+void get_move(int *c);
+
 #endif // MAIN_H_

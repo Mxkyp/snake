@@ -40,10 +40,7 @@ int main(void){
     print_fruit(content, &fr->coords);
     print_snake(content, snake_head);
 
-
-    timeout(2000);
-    c = getch();
-    flushinp();
+    get_move(&c);
 
     switch(c){
       case 'w': direction = UP;
@@ -60,7 +57,7 @@ int main(void){
 
     //check_if_fruit(&snak, &fruit_position);
     //update_snake(content, &snak, direction);
-    move_snake(direction, snake_head);
+    move_snake(direction, snake_head, fr);
     wrefresh(content);
     wclear(content);
     }
@@ -69,6 +66,13 @@ int main(void){
   endwin();
   return 0;
 }
+
+void get_move(int *c){
+    timeout(300);
+    *c = getch();
+    flushinp();
+}
+
 
 void manage_fruit(WINDOW *content, struct fruit *fr){
     if(check_fruit(fr)){
