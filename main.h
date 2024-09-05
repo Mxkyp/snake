@@ -25,8 +25,8 @@ WINDOW *create_background(int side_length, int *start_y, int *start_x);
 WINDOW *wcreate_canvas(int side_length, int *start_y, int *start_x);
 
 /*
-  return true if fruit is not spawned on the window
-  or if the time elapsed between its spawn > 5 seconds
-*/
-bool fruit_passed(bool spawned, clock_t fruit_spawn, clock_t fruit_lifetime);
+  if not spawned or spawned at least FRUIT_LIFETIME_SECONDS away,
+  delets old fruit, creates new, prints it and restarts the fruit timer
+ */
+void manage_fruit(WINDOW *content, struct fruit *fr);
 #endif // MAIN_H_

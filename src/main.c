@@ -19,16 +19,14 @@ int main(void){
   assert(create_windows(SIDE_LENGTH, &content, &background, &starty, &startx));
   refresh();
 
-  struct point fruit_position = {.y = 0, .x = 0};
-  clock_t fruit_spawn;
-  bool spawned = false;
-  static const clock_t fruit_lifetime = 5 * CLOCKS_PER_SEC;
-
+  struct fruit *fr = create_fruit();
   struct snake* snake_head = create_snake(SIDE_LENGTH);
+  assert(fr);
+  assert(snake_head);
+
   new_node(snake_head);
   new_node(snake_head);
   int direction = UP;
-  assert(snake_head);
   int c;
 
   cbreak();
@@ -36,14 +34,10 @@ int main(void){
 
 
   while(true){
-    if(fruit_passed(spawned, fruit_spawn, fruit_lifetime)){
-      mvwdelch(content, fruit_position.y, fruit_position.x);
-      spawn_fruit(content, &fruit_position, SIDE_LENGTH);
-      fruit_spawn = clock();
-      spawned = true;
-    }
 
+    manage_fruit(content, fr);
 
+    print_fruit(content, &fr->coords);
     print_snake(content, snake_head);
 
 
@@ -69,17 +63,20 @@ int main(void){
     move_snake(direction, snake_head);
     wrefresh(content);
     wclear(content);
-  }
+    }
 
   clear();
   endwin();
   return 0;
 }
 
-
-bool fruit_passed(bool spawned, clock_t fruit_spawn, clock_t fruit_lifetime){
-return ( spawned == false ||
-        (double)(clock()-fruit_spawn)/CLOCKS_PER_SEC > (double) fruit_lifetime/CLOCKS_PER_SEC );
+void manage_fruit(WINDOW *content, struct fruit *fr){
+    if(check_fruit(fr)){
+      mvwdelch(content, fr->coords.y, fr->coords.x);
+      spawn_fruit(content, fr, SIDE_LENGTH);
+      time(&fr->spawn_time);
+      fr->is_spawned = true;
+    }
 }
 
 bool create_windows(int side_length, WINDOW** content, WINDOW** background, int *starty, int *startx){

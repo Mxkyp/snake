@@ -3,10 +3,26 @@
 #include <time.h>
 #include <stdlib.h>
 #include <curses.h>
-#define MIN_SIZE 8
-#define TOP 0
-#define BOT 1
+#include <assert.h>
 
+
+
+struct fruit *create_fruit(void){
+  struct fruit *new = malloc(sizeof(*new));
+  assert(new);
+
+  new->coords.x = 0;
+  new->coords.y = 0;
+  new->is_spawned = false;
+  new->lifetime = FRUIT_LIFETIME_SECONDS;
+
+  return new;
+}
+
+bool check_fruit(struct fruit *fr){
+return ( fr->is_spawned == false ||
+        (time(NULL)-fr->spawn_time) >  fr->lifetime);
+}
 
 void print_fruit(WINDOW * win, struct point *p){
   if(win == NULL){
@@ -16,16 +32,12 @@ void print_fruit(WINDOW * win, struct point *p){
 }
 /*
  * spawns fruit randomly within the canvas
- * if the fruit is spawned waits,
 */
-struct point spawn_fruit(WINDOW * win, struct point *fruit_p, int side_length){
-  static const char empty_cell = ' ';
+void spawn_fruit(WINDOW * win, struct fruit *fr, int side_length){
 
   srand(time(NULL));
-  fruit_p->y =  rand() % side_length,
-  fruit_p->x =  rand() % side_length;
+  fr->coords.y =  rand() % side_length,
+  fr->coords.x =  rand() % side_length;
 
-  print_fruit(win, fruit_p);
-
-  return *fruit_p;
+  print_fruit(win, &fr->coords);
 }
