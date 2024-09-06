@@ -8,7 +8,7 @@
 #include "../main.h"
 #include "../canvas.h"
 #include "../worm.h"
-#define SIDE_LENGTH 30
+#define SIDE_LENGTH 20
 
 int main(void){
   initscr();
@@ -17,7 +17,8 @@ int main(void){
   WINDOW *content = NULL, *background = NULL;
   int starty, startx;
   assert(create_windows(SIDE_LENGTH, &content, &background, &starty, &startx));
-  refresh();
+  cbreak();
+  noecho();
 
   //snake and fruit
   struct fruit *fr         = create_fruit();
@@ -26,18 +27,12 @@ int main(void){
   assert(snake_head);
 
 
-  int direction;
-
-  cbreak();
-  noecho();
-
-
   while(true){
     render(content, fr, snake_head);
-    input(&direction);
-    if(move_snake(direction, SIDE_LENGTH, snake_head, fr) == false){ break; }
-
     wrefresh(content);
+    input(&snake_head->move_direction);
+    if(move_snake(SIDE_LENGTH, snake_head, fr) == false){ break; }
+   // wrefresh(content);
     wclear(content);
   }
 
@@ -67,7 +62,9 @@ void input(int *direction){
       case 'a': *direction = LEFT;
         break;
     }
-    if(last_direction == *direction + 1 || last_direction == *direction - 1){
+    if(last_direction == *direction + 1 || last_direction == *direction - 1){ // prevent the snake from doing 180 degree turns
+                                                                              // this works because directions are enum's
+                                                                              // UP = 0 DOWN = 1, LEFT = 3 RIGHT = 4
       *direction = last_direction;
     }
 }

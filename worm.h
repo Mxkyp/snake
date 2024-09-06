@@ -6,6 +6,7 @@
 #define START_SIZE 3 //the starting length of the snake
 
 struct snake{
+  int move_direction;
   struct point coords;
   struct snake *next;
   struct snake *before;
@@ -29,7 +30,7 @@ struct snake *grow_snake(struct snake *head);
 void print_snake(WINDOW *win, struct snake *head);
 
 
-bool move_snake(int direction, int side_length, struct snake *head, struct fruit *fr);
+bool move_snake(int side_length, struct snake *head, struct fruit *fr);
 
 /*
  * checks if a given point p would be on the snake, starting from the s cell

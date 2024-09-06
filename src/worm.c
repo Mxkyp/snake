@@ -10,6 +10,7 @@ struct snake *create_snake(const int canvas_side_length){
   s->coords.y = canvas_side_length/2;
   s->coords.x = canvas_side_length/2;
   s->before = NULL;
+  s->move_direction = UP;
 
   for(int i = 1; i < START_SIZE; i++){
     grow_snake(s);
@@ -35,13 +36,16 @@ struct snake *grow_snake(struct snake *head){
 }
 
 void print_snake(WINDOW *win, struct snake *head){
+  start_color();
+  init_pair(2, COLOR_BLUE, COLOR_BLACK);
+
   while(head != NULL){
-    mvwaddch(win, head->coords.y, head->coords.x, 'o' | A_BOLD);
+    mvwaddch(win, head->coords.y, head->coords.x, 'o' | A_BOLD | COLOR_PAIR(2));
     head = head->next;
   }
 }
 
-bool move_snake(int direction, int side_length, struct snake *head, struct fruit *fr){
+bool move_snake(int side_length, struct snake *head, struct fruit *fr){
   struct snake *mover = head->next;
 
   while(mover->next != NULL){ // select the last 2 elements (mover is the last)
@@ -58,18 +62,18 @@ bool move_snake(int direction, int side_length, struct snake *head, struct fruit
     head = head->before;
   }
 
-  switch(direction){ // update the head
+  switch(head->move_direction){ // update the head
     case UP: head->coords.y--;
-      if(head->coords.y < 0){ head->coords.y = side_length-1;}
+      if(head->coords.y <= 0){ head->coords.y = side_length-1;}
       break;
     case RIGHT: head->coords.x++;
-      if(head->coords.x > side_length){ head->coords.x = 0;}
+      if(head->coords.x >= side_length){ head->coords.x = 0;}
       break;
     case DOWN: head->coords.y++;
-      if(head->coords.y > side_length){ head->coords.y = 0;}
+      if(head->coords.y >= side_length){ head->coords.y = 0;}
       break;
     case LEFT: head->coords.x--;
-      if(head->coords.x < 0){ head->coords.x = side_length-1;}
+      if(head->coords.x <= 0){ head->coords.x = side_length-1;}
       break;
   };
 

@@ -28,7 +28,9 @@ void print_fruit(WINDOW * win, struct point *p){
   if(win == NULL){
    win = stdscr;
   }
-  mvwaddch(win, p->y, p->x, '*' | A_BOLD);
+  start_color();
+  init_pair(3, COLOR_GREEN, COLOR_BLACK);
+  mvwaddch(win, p->y, p->x, '*' | A_BOLD | COLOR_PAIR(3));
 }
 
 void spawn_fruit(WINDOW * win, struct fruit *fr, struct snake *s, int side_length){
