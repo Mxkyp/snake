@@ -8,8 +8,9 @@
 #define MIN_SIZE 8
 #define TOP 0
 #define BOT 1
-
 enum directions{UP = 0, RIGHT, DOWN, LEFT};
+
+struct snake;
 
 struct point{
   int x,y;
@@ -23,10 +24,11 @@ struct fruit{
 };
 
 /*
- * creates a random coordinate fruit_p within the side_length square,
+ * creates a random coordinate fruit_p within the square of side_length
+ * thats not on the snake,
  * then call print_fruit(win, fruit_p)
 */
-void spawn_fruit(WINDOW * win, struct fruit *fr, int side_length);
+void spawn_fruit(WINDOW * win, struct fruit *fr, struct snake *s, int side_length);
 
 /*
  creates an object of fruit class, and initalizes it with default values
@@ -42,4 +44,5 @@ void print_fruit(WINDOW * win, struct point *p);
  checks if either fruit isn't spawned, or the time since it has spawned is greater than FRUIT_LIFETIME_SECONDS
  */
 bool check_fruit(struct fruit *fr);
+
 #endif

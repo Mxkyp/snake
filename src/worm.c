@@ -10,10 +10,14 @@ struct snake *create_snake(const int canvas_side_length){
   s->coords.y = canvas_side_length/2;
   s->coords.x = canvas_side_length/2;
   s->before = NULL;
+
+  for(int i = 1; i < START_SIZE; i++){
+    grow_snake(s);
+  }
   return s;
 }
 
-struct snake *new_node(struct snake *head){
+struct snake *grow_snake(struct snake *head){
   struct snake *new = malloc(sizeof(*new));
   assert(new);
   while(head->next != NULL){
@@ -37,7 +41,7 @@ void print_snake(WINDOW *win, struct snake *head){
   }
 }
 
-bool move_snake(int direction, struct snake *head, struct fruit *fr){
+void move_snake(int direction, struct snake *head, struct fruit *fr){
   struct snake *mover = head->next;
 
   while(mover->next != NULL){ // select the last 2 elements (mover is the last)
@@ -66,6 +70,16 @@ bool move_snake(int direction, struct snake *head, struct fruit *fr){
   };
 
   if(head->coords.y == fr->coords.y && head->coords.x == fr->coords.x){ // if head lands on a fruit enlargen the snake by 1
-    new_node(head);
+    grow_snake(head);
   }
+}
+
+bool on_snake(struct point *p, struct snake *s){
+  while(s != NULL){
+    if(p->y == s->coords.y && p->x == s->coords.x){
+      return true;
+    }
+    s = s->next;
+  }
+  return false;
 }

@@ -3,8 +3,7 @@
 #include "canvas.h"
 #include <stdlib.h>
 #include <curses.h>
-
-
+#define START_SIZE 3 //the starting length of the snake
 
 struct snake{
   struct point coords;
@@ -24,12 +23,17 @@ struct snake *create_snake(const int canvas_side_length);
  ** checks if it was properly created with assert
  ** returns a pointer to it
 */
-struct snake *new_node(struct snake *head);
+struct snake *grow_snake(struct snake *head);
 
 
 void print_snake(WINDOW *win, struct snake *head);
 
 
-bool move_snake(int direction, struct snake *head, struct fruit *fr);
+void move_snake(int direction, struct snake *head, struct fruit *fr);
 
+/*
+ * checks if a given point p would be on the snake,
+ * if yes returns true else false
+*/
+bool on_snake(struct point *p, struct snake *s);
 #endif

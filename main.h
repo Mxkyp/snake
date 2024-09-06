@@ -28,7 +28,7 @@ WINDOW *wcreate_canvas(int side_length, int *start_y, int *start_x);
   if not spawned or spawned at least FRUIT_LIFETIME_SECONDS away,
   delets old fruit, creates new, prints it and restarts the fruit timer
  */
-void manage_fruit(WINDOW *content, struct fruit *fr);
+void manage_fruit(WINDOW *content, struct fruit *fr, struct snake *s);
 
 /*
  gives a 300ms window for inputing a char

@@ -1,10 +1,10 @@
 #include "../canvas.h"
+#include "../worm.h"
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
 #include <curses.h>
 #include <assert.h>
-
 
 
 struct fruit *create_fruit(void){
@@ -30,14 +30,15 @@ void print_fruit(WINDOW * win, struct point *p){
   }
   mvwaddch(win, p->y, p->x, '*' | A_BOLD);
 }
-/*
- * spawns fruit randomly within the canvas
-*/
-void spawn_fruit(WINDOW * win, struct fruit *fr, int side_length){
 
+void spawn_fruit(WINDOW * win, struct fruit *fr, struct snake *s, int side_length){
+
+  do{
   srand(time(NULL));
   fr->coords.y =  rand() % side_length,
   fr->coords.x =  rand() % side_length;
+  }while(on_snake(&fr->coords, s));
 
   print_fruit(win, &fr->coords);
 }
+

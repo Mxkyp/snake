@@ -9,25 +9,24 @@
 #include "../canvas.h"
 #include "../worm.h"
 #define SIDE_LENGTH 20
-/* add moving the snake */
 
 int main(void){
   initscr();
 
+  //background and content display
   WINDOW *content = NULL, *background = NULL;
   int starty, startx;
   assert(create_windows(SIDE_LENGTH, &content, &background, &starty, &startx));
   refresh();
 
+  //snake and fruit
   struct fruit *fr = create_fruit();
-  struct snake* snake_head = create_snake(SIDE_LENGTH);
+  struct snake *snake_head = create_snake(SIDE_LENGTH);
   assert(fr);
   assert(snake_head);
 
-  new_node(snake_head);
-  new_node(snake_head);
-  int direction = UP;
-  int c;
+
+  int c, direction;
 
   cbreak();
   noecho();
@@ -35,7 +34,7 @@ int main(void){
 
   while(true){
 
-    manage_fruit(content, fr);
+    manage_fruit(content, fr, snake_head);
 
     print_fruit(content, &fr->coords);
     print_snake(content, snake_head);
@@ -54,13 +53,10 @@ int main(void){
     }
 
 
-
-    //check_if_fruit(&snak, &fruit_position);
-    //update_snake(content, &snak, direction);
     move_snake(direction, snake_head, fr);
     wrefresh(content);
     wclear(content);
-    }
+  }
 
   clear();
   endwin();
@@ -74,10 +70,10 @@ void get_move(int *c){
 }
 
 
-void manage_fruit(WINDOW *content, struct fruit *fr){
+void manage_fruit(WINDOW *content, struct fruit *fr, struct snake *s){
     if(check_fruit(fr)){
       mvwdelch(content, fr->coords.y, fr->coords.x);
-      spawn_fruit(content, fr, SIDE_LENGTH);
+      spawn_fruit(content, fr, s, SIDE_LENGTH);
       time(&fr->spawn_time);
       fr->is_spawned = true;
     }
