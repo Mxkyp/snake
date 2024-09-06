@@ -35,7 +35,7 @@ int main(void){
   while(true){
     render(content, fr, snake_head);
     input(&direction);
-    move_snake(direction, snake_head, fr);
+    move_snake(direction, SIDE_LENGTH, snake_head, fr);
 
     wrefresh(content);
     wclear(content);

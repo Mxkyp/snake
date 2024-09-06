@@ -41,7 +41,7 @@ void print_snake(WINDOW *win, struct snake *head){
   }
 }
 
-void move_snake(int direction, struct snake *head, struct fruit *fr){
+void move_snake(int direction, int side_length, struct snake *head, struct fruit *fr){
   struct snake *mover = head->next;
 
   while(mover->next != NULL){ // select the last 2 elements (mover is the last)
@@ -60,12 +60,16 @@ void move_snake(int direction, struct snake *head, struct fruit *fr){
 
   switch(direction){ // update the head
     case UP: head->coords.y--;
+      if(head->coords.y < 0){ head->coords.y = side_length-1;}
       break;
     case RIGHT: head->coords.x++;
+      if(head->coords.x > side_length){ head->coords.x = 0;}
       break;
     case DOWN: head->coords.y++;
+      if(head->coords.y > side_length){ head->coords.y = 0;}
       break;
     case LEFT: head->coords.x--;
+      if(head->coords.x < 0){ head->coords.x = side_length-1;}
       break;
   };
 

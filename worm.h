@@ -29,7 +29,7 @@ struct snake *grow_snake(struct snake *head);
 void print_snake(WINDOW *win, struct snake *head);
 
 
-void move_snake(int direction, struct snake *head, struct fruit *fr);
+void move_snake(int direction, int side_length, struct snake *head, struct fruit *fr);
 
 /*
  * checks if a given point p would be on the snake,
