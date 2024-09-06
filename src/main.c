@@ -35,7 +35,7 @@ int main(void){
   while(true){
     render(content, fr, snake_head);
     input(&direction);
-    move_snake(direction, SIDE_LENGTH, snake_head, fr);
+    if(move_snake(direction, SIDE_LENGTH, snake_head, fr) == false){ break; }
 
     wrefresh(content);
     wclear(content);
@@ -54,6 +54,7 @@ void render(WINDOW *content, struct fruit *fr, struct snake *head){
 
 void input(int *direction){
     static int c;
+    int last_direction = *direction;
     get_move(&c);
 
     switch(c){
@@ -66,12 +67,9 @@ void input(int *direction){
       case 'a': *direction = LEFT;
         break;
     }
-}
-
-void get_move(int *c){
-    timeout(300);
-    *c = getch();
-    flushinp();
+    if(last_direction == *direction + 1 || last_direction == *direction - 1){
+      *direction = last_direction;
+    }
 }
 
 void manage_fruit(WINDOW *content, struct fruit *fr, struct snake *s){
@@ -82,6 +80,13 @@ void manage_fruit(WINDOW *content, struct fruit *fr, struct snake *s){
       fr->is_spawned = true;
     }
 }
+
+void get_move(int *c){
+    timeout(300);
+    *c = getch();
+    flushinp();
+}
+
 
 bool create_windows(int side_length, WINDOW** content, WINDOW** background, int *starty, int *startx){
   *starty = (LINES - side_length) / 2;

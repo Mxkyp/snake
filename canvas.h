@@ -1,4 +1,3 @@
-
 #ifndef CANVAS_H_
 #define CANVAS_H_
 #include <stdbool.h>
@@ -9,7 +8,7 @@
 #define MIN_SIZE 8
 #define TOP 0
 #define BOT 1
-enum directions{UP = 0, RIGHT, DOWN, LEFT};
+enum directions{UP = 0, DOWN, LEFT = 3, RIGHT};
 
 struct snake;
 

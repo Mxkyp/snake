@@ -29,10 +29,10 @@ struct snake *grow_snake(struct snake *head);
 void print_snake(WINDOW *win, struct snake *head);
 
 
-void move_snake(int direction, int side_length, struct snake *head, struct fruit *fr);
+bool move_snake(int direction, int side_length, struct snake *head, struct fruit *fr);
 
 /*
- * checks if a given point p would be on the snake,
+ * checks if a given point p would be on the snake, starting from the s cell
  * if yes returns true else false
 */
 bool on_snake(struct point *p, struct snake *s);

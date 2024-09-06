@@ -41,7 +41,7 @@ void print_snake(WINDOW *win, struct snake *head){
   }
 }
 
-void move_snake(int direction, int side_length, struct snake *head, struct fruit *fr){
+bool move_snake(int direction, int side_length, struct snake *head, struct fruit *fr){
   struct snake *mover = head->next;
 
   while(mover->next != NULL){ // select the last 2 elements (mover is the last)
@@ -73,10 +73,12 @@ void move_snake(int direction, int side_length, struct snake *head, struct fruit
       break;
   };
 
-  if(head->coords.y == fr->coords.y && head->coords.x == fr->coords.x){ // if head lands on a fruit enlargen the snake by 1, delete the fruit
+  if(on_snake(&head->coords, head->next)){ return false; }
+  else if(head->coords.y == fr->coords.y && head->coords.x == fr->coords.x){ // if head lands on a fruit enlargen the snake by 1, delete the fruit
     grow_snake(head);
     fr->is_spawned = false;
   }
+  return true;
 }
 
 bool on_snake(struct point *p, struct snake *s){

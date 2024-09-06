@@ -28,8 +28,7 @@ WINDOW *create_background(int side_length, int *start_y, int *start_x);
  * creates a window representing the canvas, inside the background window
  * returns a pointer to it
 */
-WINDOW *
-create_canvas(int side_length, int *start_y, int *start_x);
+WINDOW *create_canvas(int side_length, int *start_y, int *start_x);
 
 /*
   if not spawned or spawned at least FRUIT_LIFETIME_SECONDS away,
