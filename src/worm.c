@@ -69,8 +69,9 @@ void move_snake(int direction, struct snake *head, struct fruit *fr){
       break;
   };
 
-  if(head->coords.y == fr->coords.y && head->coords.x == fr->coords.x){ // if head lands on a fruit enlargen the snake by 1
+  if(head->coords.y == fr->coords.y && head->coords.x == fr->coords.x){ // if head lands on a fruit enlargen the snake by 1, delete the fruit
     grow_snake(head);
+    fr->is_spawned = false;
   }
 }
 

@@ -8,7 +8,7 @@
 #include "../main.h"
 #include "../canvas.h"
 #include "../worm.h"
-#define SIDE_LENGTH 20
+#define SIDE_LENGTH 30
 
 int main(void){
   initscr();
@@ -20,40 +20,23 @@ int main(void){
   refresh();
 
   //snake and fruit
-  struct fruit *fr = create_fruit();
+  struct fruit *fr         = create_fruit();
   struct snake *snake_head = create_snake(SIDE_LENGTH);
   assert(fr);
   assert(snake_head);
 
 
-  int c, direction;
+  int direction;
 
   cbreak();
   noecho();
 
 
   while(true){
-
-    manage_fruit(content, fr, snake_head);
-
-    print_fruit(content, &fr->coords);
-    print_snake(content, snake_head);
-
-    get_move(&c);
-
-    switch(c){
-      case 'w': direction = UP;
-        break;
-      case 'd': direction = RIGHT;
-        break;
-      case 's': direction = DOWN;
-        break;
-      case 'a': direction = LEFT;
-        break;
-    }
-
-
+    render(content, fr, snake_head);
+    input(&direction);
     move_snake(direction, snake_head, fr);
+
     wrefresh(content);
     wclear(content);
   }
@@ -63,12 +46,33 @@ int main(void){
   return 0;
 }
 
+void render(WINDOW *content, struct fruit *fr, struct snake *head){
+    manage_fruit(content, fr, head);
+    print_fruit(content, &fr->coords);
+    print_snake(content, head);
+}
+
+void input(int *direction){
+    static int c;
+    get_move(&c);
+
+    switch(c){
+      case 'w': *direction = UP;
+        break;
+      case 'd': *direction = RIGHT;
+        break;
+      case 's': *direction = DOWN;
+        break;
+      case 'a': *direction = LEFT;
+        break;
+    }
+}
+
 void get_move(int *c){
     timeout(300);
     *c = getch();
     flushinp();
 }
-
 
 void manage_fruit(WINDOW *content, struct fruit *fr, struct snake *s){
     if(check_fruit(fr)){
@@ -87,7 +91,7 @@ bool create_windows(int side_length, WINDOW** content, WINDOW** background, int 
   refresh();
 
   *background = create_background(side_length, starty, startx);
-  *content = wcreate_canvas(side_length, starty, startx);
+  *content    = create_canvas(side_length, starty, startx);
 
   refresh();
 
@@ -110,7 +114,7 @@ WINDOW *create_background(int side_length, int *start_y, int *start_x){
   return border_win;
 }
 
-WINDOW *wcreate_canvas(int side_length, int *start_y, int *start_x){
+WINDOW *create_canvas(int side_length, int *start_y, int *start_x){
   WINDOW *content_win;
 
   content_win = newwin(side_length, side_length, *start_y+1 , *start_x+1);

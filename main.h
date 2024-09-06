@@ -5,6 +5,12 @@
 #include <stdbool.h>
 #include <time.h>
 
+/* renders the snake, fruit on the canvas */
+void render(WINDOW *content, struct fruit *fr, struct snake *head);
+
+/* takes input from the user to change the snake's move direction accordingly */
+void input(int *direction);
+
 /*
  * creates the background window and canvas window,
  * returns false if any window failed to create
@@ -22,7 +28,8 @@ WINDOW *create_background(int side_length, int *start_y, int *start_x);
  * creates a window representing the canvas, inside the background window
  * returns a pointer to it
 */
-WINDOW *wcreate_canvas(int side_length, int *start_y, int *start_x);
+WINDOW *
+create_canvas(int side_length, int *start_y, int *start_x);
 
 /*
   if not spawned or spawned at least FRUIT_LIFETIME_SECONDS away,
