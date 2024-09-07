@@ -11,6 +11,7 @@ struct snake *create_snake(const int canvas_side_length){
   s->coords.x = canvas_side_length/2;
   s->before = NULL;
   s->move_direction = UP;
+  s->game_score = 0;
 
   for(int i = 1; i < START_SIZE; i++){
     grow_snake(s);
@@ -64,7 +65,7 @@ bool move_snake(int side_length, struct snake *head, struct fruit *fr){
 
   switch(head->move_direction){ // update the head
     case UP: head->coords.y--;
-      if(head->coords.y <= 0){ head->coords.y = side_length-1;}
+      if(head->coords.y < 0){ head->coords.y = side_length-1;}
       break;
     case RIGHT: head->coords.x++;
       if(head->coords.x >= side_length){ head->coords.x = 0;}
@@ -73,7 +74,7 @@ bool move_snake(int side_length, struct snake *head, struct fruit *fr){
       if(head->coords.y >= side_length){ head->coords.y = 0;}
       break;
     case LEFT: head->coords.x--;
-      if(head->coords.x <= 0){ head->coords.x = side_length-1;}
+      if(head->coords.x < 0){ head->coords.x = side_length-1;}
       break;
   };
 
@@ -81,6 +82,7 @@ bool move_snake(int side_length, struct snake *head, struct fruit *fr){
   else if(head->coords.y == fr->coords.y && head->coords.x == fr->coords.x){ // if head lands on a fruit enlargen the snake by 1, delete the fruit
     grow_snake(head);
     fr->is_spawned = false;
+    head->game_score++;
   }
   return true;
 }

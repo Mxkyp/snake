@@ -6,7 +6,7 @@
 #include <time.h>
 
 /* renders the snake, fruit on the canvas */
-void render(WINDOW *content, struct fruit *fr, struct snake *head);
+void render(WINDOW *content, struct fruit *fr, struct snake *head, int starty, int startx);
 
 /* takes input from the user to change the snake's move direction accordingly */
 void input(int *direction);
@@ -41,4 +41,6 @@ void manage_fruit(WINDOW *content, struct fruit *fr, struct snake *s);
  */
 void get_move(int *c);
 
+void end_screen(WINDOW *main, int score, int side_length);
+void print_score(int game_score, int starty, int startx);
 #endif // MAIN_H_

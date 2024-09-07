@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <assert.h>
@@ -8,7 +9,7 @@
 #include "../main.h"
 #include "../canvas.h"
 #include "../worm.h"
-#define SIDE_LENGTH 20
+#define SIDE_LENGTH 15
 
 int main(void){
   initscr();
@@ -28,11 +29,10 @@ int main(void){
 
 
   while(true){
-    render(content, fr, snake_head);
+    render(content, fr, snake_head, starty, startx);
     wrefresh(content);
     input(&snake_head->move_direction);
-    if(move_snake(SIDE_LENGTH, snake_head, fr) == false){ break; }
-   // wrefresh(content);
+    if(move_snake(SIDE_LENGTH, snake_head, fr) == false){ end_screen(content, snake_head->game_score, SIDE_LENGTH); break; }
     wclear(content);
   }
 
@@ -41,10 +41,11 @@ int main(void){
   return 0;
 }
 
-void render(WINDOW *content, struct fruit *fr, struct snake *head){
+void render(WINDOW *content, struct fruit *fr, struct snake *head, int starty, int startx){
     manage_fruit(content, fr, head);
     print_fruit(content, &fr->coords);
     print_snake(content, head);
+    print_score(head->game_score, starty, startx);
 }
 
 void input(int *direction){
@@ -84,6 +85,10 @@ void get_move(int *c){
     flushinp();
 }
 
+void print_score(int game_score, int starty, int startx){
+  mvprintw(starty-1, startx + 1, "score:%d", game_score);
+}
+
 
 bool create_windows(int side_length, WINDOW** content, WINDOW** background, int *starty, int *startx){
   *starty = (LINES - side_length) / 2;
@@ -107,10 +112,10 @@ WINDOW *create_background(int side_length, int *start_y, int *start_x){
   WINDOW *border_win;
   border_win = newwin( side_length+2, side_length+2, *start_y, *start_x);
   start_color();
-  init_pair(1, COLOR_CYAN, COLOR_BLACK);
+  init_pair(1, COLOR_MAGENTA, COLOR_BLACK);
 
-  wbkgd(border_win,COLOR_PAIR(1));
-  wborder(border_win,'@','@','@','@','@','@','@','@');
+  wbkgd(border_win,COLOR_PAIR(1) | A_DIM);
+  box(border_win,0,0);
 
   wrefresh(border_win);
   return border_win;
@@ -123,4 +128,35 @@ WINDOW *create_canvas(int side_length, int *start_y, int *start_x){
   wrefresh(content_win);
 
   return content_win;
+}
+
+void end_screen(WINDOW *main, int score, int side_length){
+  touchwin(main);
+
+  WINDOW *end_screen;
+  const int end_screen_width =  13,
+            end_screen_height = 8;
+  end_screen = derwin(main, end_screen_height, end_screen_width,(side_length - end_screen_height)/2,(side_length - end_screen_width)/2);
+  wclear(end_screen);
+  start_color();
+
+  init_pair(2, COLOR_RED, COLOR_BLACK);
+  init_pair(5, COLOR_WHITE, COLOR_BLACK);
+
+  wbkgd(end_screen, COLOR_PAIR(2) | A_DIM);
+  box(end_screen,0,0);
+  attron(COLOR_PAIR(2));
+
+  wattron(end_screen, COLOR_PAIR(5) | A_BOLD | A_BLINK);
+  mvwprintw(end_screen, (end_screen_height-1)/2,(end_screen_width - (int)strlen("GAME OVER"))/2 , "GAME OVER");
+  wattroff(end_screen, COLOR_PAIR(5) | A_BOLD | A_BLINK);
+
+  mvwprintw(end_screen, (end_screen_height-1)/2 + 1,(end_screen_width - (int)strlen("GAME OVER"))/2 , "SCORE:%d ",score);
+
+  attroff(COLOR_PAIR(2));
+  doupdate();
+  wrefresh(end_screen);
+  refresh();
+
+  sleep(8);
 }

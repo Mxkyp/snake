@@ -7,6 +7,7 @@
 
 struct snake{
   int move_direction;
+  int game_score;
   struct point coords;
   struct snake *next;
   struct snake *before;

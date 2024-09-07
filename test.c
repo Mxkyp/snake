@@ -1,112 +1,117 @@
-#include <ncurses.h>
+#include <panel.h>
 
+#define NLINES 10
+#define NCOLS 40
 
-WINDOW *create_newwin(int height, int width, int starty, int startx);
-void destroy_win(WINDOW *local_win);
-
-int main(int argc, char *argv[])
-{	WINDOW *my_win;
-	int startx, starty, width, height;
-	int ch;
-
-	initscr();			/* Start curses mode 		*/
-	cbreak();			/* Line buffering disabled, Pass on
-					 * everty thing to me 		*/
-	keypad(stdscr, TRUE);		/* I need that nifty F1 	*/
-
-	height = 3;
-	width = 10;
-	starty = (LINES - height) / 2;	/* Calculating for a center placement */
-	startx = (COLS - width) / 2;	/* of the window		*/
-	printw("Press F1 to exit");
-	refresh();
-	my_win = create_newwin(height, width, starty, startx);
-
-	while((ch = getch()) != KEY_F(1))
-	{	switch(ch)
-		{	case KEY_LEFT:
-				destroy_win(my_win);
-				my_win = create_newwin(height, width, starty,--startx);
-				break;
-			case KEY_RIGHT:
-				destroy_win(my_win);
-				my_win = create_newwin(height, width, starty,++startx);
-				break;
-			case KEY_UP:
-				destroy_win(my_win);
-				my_win = create_newwin(height, width, --starty,startx);
-				break;
-			case KEY_DOWN:
-				destroy_win(my_win);
-				my_win = create_newwin(height, width, ++starty,startx);
-				break;
-		}
-	}
-
-	endwin();			/* End curses mode		  */
-	return 0;
-}
-
-WINDOW *create_newwin(int height, int width, int starty, int startx)
-{	WINDOW *local_win;
-
-	local_win = newwin(height, width, starty, startx);
-	box(local_win, 0 , 0);		/* 0, 0 gives default characters
-					 * for the vertical and horizontal
-					 * lines			*/
-	wrefresh(local_win);		/* Show that box 		*/
-
-	return local_win;
-}
-
-void destroy_win(WINDOW *local_win)
-{
-	/* box(local_win, ' ', ' '); : This won't produce the desired
-	 * result of erasing the window. It will leave it's four corners
-	 * and so an ugly remnant of window.
-	 */
-	wborder(local_win, ' ', ' ', ' ',' ',' ',' ',' ',' ');
-	/* The parameters taken are
-	 * 1. win: the window on which to operate
-	 * 2. ls: character to be used for the left side of the window
-	 * 3. rs: character to be used for the right side of the window
-	 * 4. ts: character to be used for the top side of the window
-	 * 5. bs: character to be used for the bottom side of the window
-	 * 6. tl: character to be used for the top left corner of the window
-	 * 7. tr: character to be used for the top right corner of the window
-	 * 8. bl: character to be used for the bottom left corner of the window
-	 * 9. br: character to be used for the bottom right corner of the window
-	 */
-	wrefresh(local_win);
-	delwin(local_win);
-#include <ncurses.h>
+void init_wins(WINDOW **wins, int n);
+void win_show(WINDOW *win, char *label, int label_color);
+void print_in_middle(WINDOW *win, int starty, int startx, int width, char *string, chtype color);
 
 int main()
-{	int ch;
+{	WINDOW *my_wins[3];
+	PANEL  *my_panels[3];
+	PANEL  *top;
+	int ch;
 
-	initscr();			/* Start curses mode 		*/
-	raw();				/* Line buffering disabled	*/
-	keypad(stdscr, TRUE);		/* We get F1, F2 etc..		*/
-	noecho();			/* Don't echo() while we do getch */
+	/* Initialize curses */
+	initscr();
+	start_color();
+	cbreak();
+	noecho();
+	keypad(stdscr, TRUE);
 
-    	printw("Type any character to see it in bold\n");
-	ch = getch();			/* If raw() hadn't been called
-					 * we have to press enter before it
-					 * gets to the program 		*/
-	if(ch == KEY_F(8))		/* Without keypad enabled this will */
-		printw("F1 Key pressed");/*  not get to us either	*/
-					/* Without noecho() some ugly escape
-					 * charachters might have been printed
-					 * on screen			*/
-	else
-	{	printw("The pressed key is ");
-		attron(A_BOLD);
-		printw("%c", ch);
-		attroff(A_BOLD);
+	/* Initialize all the colors */
+	init_pair(1, COLOR_RED, COLOR_BLACK);
+	init_pair(2, COLOR_GREEN, COLOR_BLACK);
+	init_pair(3, COLOR_BLUE, COLOR_BLACK);
+	init_pair(4, COLOR_CYAN, COLOR_BLACK);
+
+	init_wins(my_wins, 3);
+
+	/* Attach a panel to each window */ 	/* Order is bottom up */
+	my_panels[0] = new_panel(my_wins[0]); 	/* Push 0, order: stdscr-0 */
+	my_panels[1] = new_panel(my_wins[1]); 	/* Push 1, order: stdscr-0-1 */
+	my_panels[2] = new_panel(my_wins[2]); 	/* Push 2, order: stdscr-0-1-2 */
+
+	/* Set up the user pointers to the next panel */
+	set_panel_userptr(my_panels[0], my_panels[1]);
+	set_panel_userptr(my_panels[1], my_panels[2]);
+	set_panel_userptr(my_panels[2], my_panels[0]);
+
+	/* Update the stacking order. 2nd panel will be on top */
+	update_panels();
+
+	/* Show it on the screen */
+	attron(COLOR_PAIR(4));
+	mvprintw(LINES - 2, 0, "Use tab to browse through the windows (F1 to Exit)");
+	attroff(COLOR_PAIR(4));
+	doupdate();
+
+	top = my_panels[2];
+	while((ch = getch()) != KEY_F(1))
+	{	switch(ch)
+		{	case 9:
+				top = (PANEL *)panel_userptr(top);
+				top_panel(top);
+				break;
+		}
+		update_panels();
+		doupdate();
 	}
-	refresh();			/* Print it on to the real screen */
-    	getch();			/* Wait for user input */
-	endwin();			/* End curses mode		  */
-
+	endwin();
 	return 0;
-}}
+}
+
+/* Put all the windows */
+void init_wins(WINDOW **wins, int n)
+{	int x, y, i;
+	char label[80];
+
+	y = 2;
+	x = 10;
+	for(i = 0; i < n; ++i)
+	{	wins[i] = newwin(NLINES, NCOLS, y, x);
+		sprintf(label, "Window Number %d", i + 1);
+		win_show(wins[i], label, i + 1);
+		y += 3;
+		x += 7;
+	}
+}
+
+/* Show the window with a border and a label */
+void win_show(WINDOW *win, char *label, int label_color)
+{	int startx, starty, height, width;
+
+	getbegyx(win, starty, startx);
+	getmaxyx(win, height, width);
+
+	box(win, 0, 0);
+	mvwaddch(win, 2, 0, ACS_LTEE);
+	mvwhline(win, 2, 1, ACS_HLINE, width - 2);
+	mvwaddch(win, 2, width - 1, ACS_RTEE);
+
+	print_in_middle(win, 1, 0, width, label, COLOR_PAIR(label_color));
+}
+
+void print_in_middle(WINDOW *win, int starty, int startx, int width, char *string, chtype color)
+{	int length, x, y;
+	float temp;
+
+	if(win == NULL)
+		win = stdscr;
+	getyx(win, y, x);
+	if(startx != 0)
+		x = startx;
+	if(starty != 0)
+		y = starty;
+	if(width == 0)
+		width = 80;
+
+	length = strlen(string);
+	temp = (width - length)/ 2;
+	x = startx + (int)temp;
+	wattron(win, color);
+	mvwprintw(win, y, x, "%s", string);
+	wattroff(win, color);
+	refresh();
+}
