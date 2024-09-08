@@ -1,6 +1,7 @@
 #ifndef WORM_H_
 #define WORM_H_
 #include "fruit.h"
+#include "point.h"
 #include <stdlib.h>
 #include <curses.h>
 #define START_SIZE 3 //the starting length of the snake

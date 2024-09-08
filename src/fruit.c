@@ -24,7 +24,7 @@ return ( fr->is_spawned == false ||
         (time(NULL)-fr->spawn_time) >  fr->lifetime);
 }
 
-void print_fruit(WINDOW * win, struct point *p){
+void print_fruit(WINDOW *win, struct point *p){
   if(win == NULL){
    win = stdscr;
   }
@@ -33,14 +33,14 @@ void print_fruit(WINDOW * win, struct point *p){
   mvwaddch(win, p->y, p->x, '*' | A_BOLD | COLOR_PAIR(3));
 }
 
-void spawn_fruit(WINDOW * win, struct fruit *fr, struct snake *s, int side_length){
+void spawn_fruit(WINDOW * win,  struct GameElements *game_elements, int side_length){
 
   do{
   srand(time(NULL));
-  fr->coords.y =  rand() % side_length,
-  fr->coords.x =  rand() % side_length;
-  }while(on_snake(&fr->coords, s));
+  game_elements->fruit->coords.y =  rand() % side_length,
+  game_elements->fruit->coords.x =  rand() % side_length;
+  }while(on_snake(&game_elements->fruit->coords, game_elements->snake_head));
 
-  print_fruit(win, &fr->coords);
+  print_fruit(win, &game_elements->fruit->coords);
 }
 

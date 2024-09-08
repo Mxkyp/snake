@@ -11,22 +11,25 @@ LIBS= -lncurses -Wall -Wextra
 SRC=./src/
 
 
-main.o: $(SRC)main.c display.h
+main.o: $(SRC)main.c display.h point.h
 	$(CC) $(CFLAGS) -c $(SRC)main.c
 
-display.o: $(SRC)display.c display.h
+display.o: $(SRC)display.c display.h point.h
 	$(CC) $(CFLAGS) -c $(SRC)display.c
 
-fruit.o: $(SRC)fruit.c fruit.h snake.h
+point.o: $(SRC)point.c point.h
+	$(CC) $(CFLAGS) -c $(SRC)point.c
+
+fruit.o: $(SRC)fruit.c fruit.h snake.h point.h
 	$(CC) $(CFLAGS) -c $(SRC)fruit.c
 
-snake.o: $(SRC)snake.c snake.h fruit.h main.h
+snake.o: $(SRC)snake.c snake.h fruit.h main.h point.h
 	$(CC) $(CFLAGS) -c $(SRC)snake.c
 
 #=====================================================
 
-snake: main.o fruit.o snake.o display.o
-	$(CC) $(CFLAGS) -o snake main.o fruit.o snake.o display.o $(LIBS) && ./snake
+snake: main.o fruit.o snake.o display.o point.o
+	$(CC) $(CFLAGS) -o snake main.o fruit.o snake.o display.o point.o $(LIBS) && ./snake
 
 test: test.c
 	$(CC) $(CFLAGS) -o test test.c $(LIBS) && ./test

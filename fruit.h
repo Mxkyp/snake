@@ -3,15 +3,15 @@
 #include <stdbool.h>
 #include <time.h>
 #include <curses.h>
+#include "main.h"
+#include "point.h"
 
 #define FRUIT_LIFETIME_SECONDS 5;
 #define MIN_SIZE 8
 
 struct snake;
+struct GameElements;
 
-struct point{
-  int x,y;
-};
 
 struct fruit{
   struct point coords;
@@ -25,7 +25,7 @@ struct fruit{
  * thats not on the snake,
  * then call print_fruit(win, fruit_p)
 */
-void spawn_fruit(WINDOW * win, struct fruit *fr, struct snake *s, int side_length);
+void spawn_fruit(WINDOW * win, struct GameElements *game_elements, int side_length);
 
 /*
  creates an object of fruit class, and initalizes it with default values
