@@ -6,9 +6,6 @@
 
 #define FRUIT_LIFETIME_SECONDS 5;
 #define MIN_SIZE 8
-#define TOP 0
-#define BOT 1
-enum directions{UP = 0, DOWN, LEFT = 3, RIGHT};
 
 struct snake;
 

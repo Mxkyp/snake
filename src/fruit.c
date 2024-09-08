@@ -1,5 +1,5 @@
-#include "../canvas.h"
-#include "../worm.h"
+#include "../fruit.h"
+#include "../snake.h"
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>

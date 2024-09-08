@@ -3,21 +3,31 @@ CC=gcc
 
 PROG=snake test
 FILE1=main
-FILE2=canvas
+FILE2=
 all: $(PROG)
+
 
 LIBS= -lncurses -Wall -Wextra
 SRC=./src/
 
-main.o: $(SRC)main.c canvas.h
+
+main.o: $(SRC)main.c display.h
 	$(CC) $(CFLAGS) -c $(SRC)main.c
-canvas.o: $(SRC)canvas.c canvas.h
-	$(CC) $(CFLAGS) -c $(SRC)canvas.c
-worm.o: $(SRC)worm.c canvas.h
-	$(CC) $(CFLAGS) -c $(SRC)worm.c
+
+display.o: $(SRC)display.c display.h
+	$(CC) $(CFLAGS) -c $(SRC)display.c
+
+fruit.o: $(SRC)fruit.c fruit.h snake.h
+	$(CC) $(CFLAGS) -c $(SRC)fruit.c
+
+snake.o: $(SRC)snake.c snake.h fruit.h main.h
+	$(CC) $(CFLAGS) -c $(SRC)snake.c
+
 #=====================================================
-snake: main.o canvas.o worm.o
-	$(CC) $(CFLAGS) -o snake main.o canvas.o worm.o $(LIBS) && ./snake
+
+snake: main.o fruit.o snake.o display.o
+	$(CC) $(CFLAGS) -o snake main.o fruit.o snake.o display.o $(LIBS) && ./snake
+
 test: test.c
 	$(CC) $(CFLAGS) -o test test.c $(LIBS) && ./test
 
