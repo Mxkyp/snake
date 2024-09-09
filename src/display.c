@@ -3,25 +3,37 @@
 #include <unistd.h>
 #include "../display.h"
 #include "../main.h"
+#include <stdlib.h>
+#include <curses.h>
+
 #define SQUARE_START_Y(side_length) (LINES-side_length)/2
 #define SQUARE_START_X(side_length) (COLS-side_length)/2
 
-bool create_windows(int side_length, WINDOW** content, WINDOW** background, struct point *background_upper_left_corner){
-  *background_upper_left_corner = set_yx(SQUARE_START_Y(side_length), SQUARE_START_X(side_length));
+struct GameBoard* create_game_board(const int side_length){
+  struct GameBoard *board = malloc(sizeof(*board));
+  assert(board);
+  board->background_upper_left_corner = set_yx(SQUARE_START_Y(side_length), SQUARE_START_X(side_length));
   curs_set(0);
 
   refresh();
 
-  *background = create_background(side_length, background_upper_left_corner);
-  *content    = create_content(side_length, background_upper_left_corner);
+  board->background_square = create_background(side_length, &board->background_upper_left_corner);
+  board->content_square    = create_content(side_length, &board->background_upper_left_corner);
+  board->content_win_side_length = side_length;
 
   refresh();
 
-  if(background == NULL || content == NULL){
-    return false;
+  if(board->background_square == NULL || board->content_square == NULL){
+    return NULL;
   }
-  return true;
+
+  return board;
 }
+
+void delete_game_board(struct GameBoard* board){
+  free(board);
+}
+
 
 WINDOW *create_background(int side_length, struct point *background_upper_left_corner){
   WINDOW *border_win;
@@ -46,14 +58,16 @@ WINDOW *create_content(int side_length, struct point *background_upper_left_corn
   return content_win;
 }
 
-void end_screen(WINDOW *main, int score, int side_length){
-  touchwin(main);
+void end_screen(struct GameBoard *board, int score){
+  WINDOW* base = board->content_square;
+  const int side_length = board->content_win_side_length;
+  touchwin(base);
 
   WINDOW *end_screen;
   const int end_screen_width =  13,
             end_screen_height = 8;
 
-  end_screen = derwin(main, end_screen_height, end_screen_width,(side_length - end_screen_height)/2,(side_length - end_screen_width)/2);
+  end_screen = derwin(base, end_screen_height, end_screen_width,(side_length - end_screen_height)/2,(side_length - end_screen_width)/2);
   assert(end_screen);
 
   wclear(end_screen);
@@ -78,6 +92,6 @@ void end_screen(WINDOW *main, int score, int side_length){
   wrefresh(end_screen);
   refresh();
 
-  sleep(10);
+  sleep(4);
 }
 

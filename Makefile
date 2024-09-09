@@ -7,11 +7,12 @@ FILE2=
 all: $(PROG)
 
 
-LIBS= -lncurses -Wall -Wextra
+LIBS= -lncurses -O2
+#LIBS= -lncurses -Wall -Wextra
 SRC=./src/
 
 
-main.o: $(SRC)main.c display.h point.h
+main.o: $(SRC)main.c display.h point.h game_elements.h
 	$(CC) $(CFLAGS) -c $(SRC)main.c
 
 display.o: $(SRC)display.c display.h point.h
@@ -20,10 +21,10 @@ display.o: $(SRC)display.c display.h point.h
 point.o: $(SRC)point.c point.h
 	$(CC) $(CFLAGS) -c $(SRC)point.c
 
-fruit.o: $(SRC)fruit.c fruit.h snake.h point.h
+fruit.o: $(SRC)fruit.c game_elements.h point.h
 	$(CC) $(CFLAGS) -c $(SRC)fruit.c
 
-snake.o: $(SRC)snake.c snake.h fruit.h main.h point.h
+snake.o: $(SRC)snake.c game_elements.h main.h point.h
 	$(CC) $(CFLAGS) -c $(SRC)snake.c
 
 #=====================================================

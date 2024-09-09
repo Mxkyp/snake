@@ -1,5 +1,5 @@
-#include "../fruit.h"
-#include "../snake.h"
+#include "../main.h"
+#include "../game_elements.h"
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>

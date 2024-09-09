@@ -1,6 +1,5 @@
-#include "../snake.h"
-#include "../fruit.h"
 #include "../main.h"
+#include "../game_elements.h"
 #include <stdlib.h>
 #include <unistd.h>
 #include <assert.h>
@@ -15,14 +14,28 @@ struct snake *create_snake(const int canvas_side_length){
   s->game_score = 0;
 
   for(int i = 1; i < START_SIZE; i++){
-    grow_snake(s, canvas_side_length);
+    grow_snake(s);
   }
   return s;
 }
 
+void delete_snake(struct snake *head){
+  struct snake *to_delete;
 
-struct snake *grow_snake(struct snake *head, const int canvas_side_length){
-  int direction = head->move_direction;
+  while(head->next != NULL){
+    head = head->next;
+  }
+
+  while(head->before != NULL){
+    to_delete = head;
+    head = head->before;
+    free(to_delete);
+  }
+
+  free(head);
+}
+
+struct snake *grow_snake(struct snake *head){
   struct snake *new = malloc(sizeof(*new));
   assert(new);
 
@@ -32,31 +45,15 @@ struct snake *grow_snake(struct snake *head, const int canvas_side_length){
 
   head->next = new;
 
-  set_new_tail(direction, canvas_side_length, head, new);
+  set_new_tail(head, new);
   new->before = head;
   new->next = NULL;
 
   return new;
 }
 
-void set_new_tail(const int move_direction, const int canvas_side_length, struct snake *tail, struct snake *new_tail){
-  if(move_direction == UP){
-    new_tail->coords.y = tail->coords.y--;
-    new_tail->coords.x = tail->coords.x;
-  }
-  else if(move_direction == DOWN){
-    new_tail->coords.y = tail->coords.y++;
-    new_tail->coords.x = tail->coords.x;
-  }
-  else if(move_direction == RIGHT){
-    new_tail->coords.y = tail->coords.y;
-    new_tail->coords.x = tail->coords.x--;
-  }
-  else if(move_direction == LEFT){
-    new_tail->coords.y = tail->coords.y;
-    new_tail->coords.x = tail->coords.x++;
-  }
-  wrap_point_around_canvas(canvas_side_length, &new_tail->coords);
+void set_new_tail(struct snake *tail, struct snake *new_tail){
+  new_tail->coords = tail->coords;
 }
 
 void print_snake(WINDOW *win, struct snake *head){
@@ -64,13 +61,13 @@ void print_snake(WINDOW *win, struct snake *head){
   init_pair(SNAKE_COLOR, COLOR_BLUE, COLOR_BLACK);
 
   while(head != NULL){
-    mvwaddch(win, head->coords.y, head->coords.x, 'o' | A_BOLD | COLOR_PAIR(2));
+    mvwaddch(win, head->coords.y, head->coords.x, 'o' | A_BOLD | COLOR_PAIR(SNAKE_COLOR));
     head = head->next;
   }
 }
 
-bool move_snake(int side_length, struct snake *head, struct fruit *fruit){
-  struct snake *mover = head->next;
+bool move_snake(int side_length, struct GameElements *game){
+  struct snake *mover = game->snake_head->next, *head = game->snake_head;
 
   while(mover->next != NULL){ // select the last 2 elements (mover is the last)
     mover = mover->next;
@@ -91,9 +88,9 @@ bool move_snake(int side_length, struct snake *head, struct fruit *fruit){
 
   if(on_snake(&head->coords, head->next)){ return false; }
 
-  else if(on_fruit(&head->coords, &fruit->coords)){ // if head lands on a fruit enlargen the snake by 1, despawn the fruit
-    grow_snake(head, side_length);
-    fruit->is_spawned = false;
+  else if(on_fruit(&head->coords, &game->fruit->coords)){ // if head lands on a fruit enlargen the snake by 1, despawn the fruit
+    grow_snake(head);
+    game->fruit->is_spawned = false;
     head->game_score++;
   }
   return true;

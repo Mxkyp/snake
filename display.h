@@ -2,13 +2,23 @@
 #include <curses.h>
 #include "point.h"
 
+struct GameBoard{
+  WINDOW *content_square;
+  WINDOW *background_square;
+  struct point background_upper_left_corner;
+  int content_win_side_length;
+};
 /*
  * creates the background window and canvas window,
  * returns false if any window failed to create
  * returns true if both were created correctly
 */
-bool create_windows(int side_length, WINDOW** content, WINDOW** background, struct point *background_upper_left_corner);
+struct GameBoard* create_game_board(const int side_length);
 
+/*
+ free's the GameBoard
+ */
+void delete_game_board(struct GameBoard* board);
 /*
  * creates background window for the playing canvas,
  * returns a pointer to it
@@ -22,6 +32,6 @@ WINDOW *create_background(int side_length, struct point *background_upper_left_c
 WINDOW *create_content(int side_length, struct point *background_upper_left_corner);
 
 
-void end_screen(WINDOW *main, int score, int side_length);
+void end_screen(struct GameBoard *board, int score);
 
 void print_score(int game_score, struct point *background_upper_left_corner);
